@@ -1,0 +1,146 @@
+CREATE DATABASE multiservicio_db;
+USE multiservicio_db;
+
+-- TABLA ROLES
+CREATE TABLE roles (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- TABLA USUARIOS
+CREATE TABLE usuarios (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100),
+    password VARCHAR(255) NOT NULL,
+    activo TINYINT(1) DEFAULT 1,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    rol_id BIGINT NOT NULL,
+    FOREIGN KEY (rol_id) REFERENCES roles(id)
+);
+
+-- TABLA SERVICIOS
+CREATE TABLE servicios (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
+    descripcion VARCHAR(255),
+    activo TINYINT(1) DEFAULT 1,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    prefijo VARCHAR(10) NOT NULL DEFAULT 'SER',
+    duracion_estimada INT NOT NULL DEFAULT 15
+);
+
+-- TABLA PRIORIDADES
+CREATE TABLE prioridades (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(50) NOT NULL UNIQUE,
+    peso INT NOT NULL,
+    tiempo_maximo_espera INT NOT NULL DEFAULT 30
+);
+
+-- TABLA VENTANILLAS
+CREATE TABLE ventanillas (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL,
+    ubicacion VARCHAR(150),
+    activa TINYINT(1) DEFAULT 1,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    estado ENUM('DISPONIBLE','OCUPADA','PAUSADA') DEFAULT 'DISPONIBLE'
+);
+
+-- TABLA TURNOS
+CREATE TABLE turnos (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    codigo VARCHAR(20) NOT NULL UNIQUE,
+    fecha DATE NOT NULL,
+    estado ENUM(
+        'PENDIENTE','LLAMADO','EN_ATENCION',
+        'FINALIZADO','CANCELADO',
+        'NO_PRESENTADO','REPROGRAMADO'
+    ) DEFAULT 'PENDIENTE',
+    servicio_id BIGINT NOT NULL,
+    prioridad_id BIGINT NOT NULL,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_llamado TIMESTAMP NULL,
+    fecha_inicio_atencion TIMESTAMP NULL,
+    fecha_finalizacion TIMESTAMP NULL,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ventanilla_id BIGINT,
+    FOREIGN KEY (servicio_id) REFERENCES servicios(id),
+    FOREIGN KEY (prioridad_id) REFERENCES prioridades(id),
+    FOREIGN KEY (ventanilla_id) REFERENCES ventanillas(id)
+);
+
+-- TABLA HISTORIAL TURNO
+CREATE TABLE historial_turno (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    turno_id BIGINT NOT NULL,
+    usuario_id BIGINT NOT NULL,
+    ventanilla_id BIGINT NOT NULL,
+    fecha DATE NOT NULL,
+    hora_inicio TIME,
+    hora_fin TIME,
+    observaciones TEXT,
+    estado_anterior VARCHAR(50),
+    estado_nuevo VARCHAR(50),
+    FOREIGN KEY (turno_id) REFERENCES turnos(id),
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+    FOREIGN KEY (ventanilla_id) REFERENCES ventanillas(id)
+);
+
+-- TABLA AUDITORIA
+CREATE TABLE auditoria (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    usuario_id BIGINT NOT NULL,
+    accion VARCHAR(255) NOT NULL,
+    fecha DATE NOT NULL,
+    hora TIME NOT NULL,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
+
+-- RELACION VENTANILLA - SERVICIO
+CREATE TABLE ventanilla_servicio (
+    ventanilla_id BIGINT NOT NULL,
+    servicio_id BIGINT NOT NULL,
+    PRIMARY KEY (ventanilla_id, servicio_id),
+    FOREIGN KEY (ventanilla_id) REFERENCES ventanillas(id),
+    FOREIGN KEY (servicio_id) REFERENCES servicios(id)
+);
+
+
+
+
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+DATOS ADICIONALES 
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+PEGA ESTO EN MYSQL Y LISTO
+🧩 ROLES (IMPORTANTE PRIMERO)
+INSERT INTO roles (id, nombre) VALUES
+(3, 'RECEPCION'),
+(4, 'ADMIN'),
+(5, 'OPERADOR');
+👤 USUARIOS
+INSERT INTO usuarios 
+(id, nombre, apellido, username, email, password, activo, fecha_creacion, rol_id) 
+VALUES
+(1, 'Administrador', 'Sistema', 'admin', 'admin@multiservicio.com',
+'$2a$10$UcG1CuVUMqzEk0/aSM/umuVjVdUyT6GOG8deckJZPKy...', 
+1, '2026-06-10 00:49:50', 4),
+
+(2, 'bella', 'nose', 'papa', 'papa@gmail.com',
+'$2a$10$sQIpzj7D9Arfy2Fg0uzqke9p9wCdzyHJiBctee.9yWv...', 
+1, '2026-06-10 01:02:19', 5),
+
+(3, 'Operador', 'Ventanilla', 'operador', 'operador@multiservicio.com',
+'$2a$10$6oiESKHuB5zzCFHnNRJUAOKlYM54EsJhzUDTvbOwdug...', 
+1, '2026-06-10 01:59:27', 5),
+
+(4, 'Recepcion', 'Turnos', 'recepcion', 'recepcion@multiservicio.com',
+'$2a$10$iGnApZH9Ls.HtmGUFnjz8.H/DU0KyvpmJqFCOemJtnJ...', 
+1, '2026-06-10 01:59:28', 3);

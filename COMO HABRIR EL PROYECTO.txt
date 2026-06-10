@@ -1,0 +1,166 @@
+# INSTRUCCIONES PARA EJECUTAR EL PROYECTO MULTISERVICIO
+
+## 1. ¿POR QUÉ EL PROYECTO NO ABRE DIRECTAMENTE?
+
+Este proyecto **NO es una página web estática**, es una aplicación desarrollada con tecnologías modernas (Node.js + Vite).
+
+Por eso:
+
+* ❌ NO funciona abriendo archivos con doble clic
+* ❌ NO funciona pegando la carpeta en el navegador
+* ✅ SÍ funciona ejecutándolo desde la terminal
+
+Esto pasa porque necesita un **servidor de desarrollo**.
+
+---
+
+## 2. INSTALAR NODE.JS
+
+Primero debes instalar Node.js:
+
+1. Ir a la página oficial: https://nodejs.org
+2. Descargar la versión LTS
+3. Instalar normalmente (Next → Next → Finish)
+
+Para verificar que está instalado, abrir la terminal (CMD) y escribir:
+
+```
+node -v
+npm -v
+```
+
+Si aparecen versiones, está correcto.
+
+---
+
+## 3. ABRIR EL PROYECTO
+
+1. Abrir la terminal (CMD)
+2. Ir a la carpeta del proyecto:
+
+```
+cd C:\Users\Glori\IdeaProjects\multiservicio
+```
+
+3. Entrar al frontend:
+
+```
+cd frontend
+```
+
+---
+
+## 4. INSTALAR DEPENDENCIAS
+
+Ejecutar:
+
+```
+npm install
+```
+
+Esto instala todo lo necesario para que el proyecto funcione.
+
+---
+
+## 5. EJECUTAR EL PROYECTO
+
+Ejecutar:
+
+```
+npm run dev
+```
+
+Si todo está bien, aparecerá algo como:
+
+```
+Local: http://localhost:3000/
+```
+
+---
+
+## 6. ABRIR EN EL NAVEGADOR
+
+Copiar y pegar en el navegador:
+
+```
+http://localhost:3000/
+```
+
+Ahí se podrá ver el sistema funcionando.
+
+---
+
+## 7. BASE DE DATOS (MYSQL)
+
+1. Abrir phpMyAdmin
+2. Crear una base de datos llamada:
+
+```
+multiservicio_db
+```
+
+3. Importar el archivo SQL (proporcionado junto al proyecto)
+
+---
+
+## 8. USUARIOS DEL SISTEMA
+
+Puedes iniciar sesión con estos usuarios:
+
+### Administrador
+
+* Usuario: admin
+* Correo: [admin@multiservicio.com](mailto:admin@multiservicio.com)
+
+### Operador
+
+* Usuario: operador
+* Correo: [operador@multiservicio.com](mailto:operador@multiservicio.com)
+
+### Recepción
+
+* Usuario: recepcion
+* Correo: [recepcion@multiservicio.com](mailto:recepcion@multiservicio.com)
+
+---
+
+## 9. POSIBLES ERRORES
+
+### ❌ "No abre en el navegador"
+
+→ No ejecutaste `npm run dev`
+
+### ❌ "Error de módulos"
+
+→ No ejecutaste `npm install`
+
+### ❌ "No conecta a la base de datos"
+
+→ No importaste el archivo SQL
+
+---
+
+## 10. RESUMEN RÁPIDO
+
+```
+cd multiservicio
+cd frontend
+npm install
+npm run dev
+```
+
+Abrir:
+
+```
+http://localhost:3000/
+```
+
+---
+
+## NOTA FINAL
+
+Este proyecto funciona como una aplicación web moderna, por eso **siempre debe ejecutarse desde la terminal** y no como un archivo normal.
+
+---
+
+FIN

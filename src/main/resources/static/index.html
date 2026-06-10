@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiservicio - Login y Registro</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #1e3a5f, #2d6a9f);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 420px;
+            overflow: hidden;
+        }
+        .tabs {
+            display: flex;
+            background: #f0f4f8;
+        }
+        .tab {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            border: none;
+            background: none;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+        .tab.active {
+            background: white;
+            color: #1e3a5f;
+            border-bottom: 3px solid #2d6a9f;
+        }
+        .panel { display: none; padding: 28px; }
+        .panel.active { display: block; }
+        h2 { color: #1e3a5f; margin-bottom: 20px; font-size: 22px; }
+        .field { margin-bottom: 14px; }
+        label { display: block; font-size: 13px; color: #555; margin-bottom: 5px; font-weight: 500; }
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        input:focus { outline: none; border-color: #2d6a9f; }
+        button[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            background: #2d6a9f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s;
+        }
+        button[type="submit"]:hover { background: #1e3a5f; }
+        .result {
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+        .result.ok { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
+        .result.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
+        .hint { font-size: 12px; color: #888; margin-top: 12px; text-align: center; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="tabs">
+        <button class="tab active" onclick="showTab('login')">Iniciar sesión</button>
+        <button class="tab" onclick="showTab('register')">Registrarse</button>
+    </div>
+
+    <div id="login" class="panel active">
+        <h2>Iniciar sesión</h2>
+        <form onsubmit="doLogin(event)">
+            <div class="field">
+                <label>Usuario</label>
+                <input type="text" id="login-user" value="admin" required>
+            </div>
+            <div class="field">
+                <label>Contraseña</label>
+                <input type="password" id="login-pass" value="1234" required>
+            </div>
+            <button type="submit">Entrar</button>
+        </form>
+        <div id="login-result" class="result"></div>
+        <p class="hint">Usuario por defecto: admin / 1234</p>
+    </div>
+
+    <div id="register" class="panel">
+        <h2>Crear cuenta</h2>
+        <form onsubmit="doRegister(event)">
+            <div class="field">
+                <label>Nombre</label>
+                <input type="text" id="reg-nombre" required>
+            </div>
+            <div class="field">
+                <label>Apellido</label>
+                <input type="text" id="reg-apellido" required>
+            </div>
+            <div class="field">
+                <label>Usuario</label>
+                <input type="text" id="reg-user" required minlength="3">
+            </div>
+            <div class="field">
+                <label>Email</label>
+                <input type="email" id="reg-email">
+            </div>
+            <div class="field">
+                <label>Contraseña</label>
+                <input type="password" id="reg-pass" required minlength="4">
+            </div>
+            <button type="submit">Registrarse</button>
+        </form>
+        <div id="register-result" class="result"></div>
+    </div>
+</div>
+
+<script>
+    function showTab(name) {
+        document.querySelectorAll('.tab').forEach((t, i) => {
+            t.classList.toggle('active', (name === 'login' && i === 0) || (name === 'register' && i === 1));
+        });
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.getElementById(name).classList.add('active');
+    }
+
+    function showResult(id, ok, message) {
+        const el = document.getElementById(id);
+        el.className = 'result ' + (ok ? 'ok' : 'error');
+        el.textContent = message;
+    }
+
+    async function doLogin(e) {
+        e.preventDefault();
+        const body = {
+            username: document.getElementById('login-user').value,
+            password: document.getElementById('login-pass').value
+        };
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const data = await res.json();
+            if (data.success) {
+                showResult('login-result', true,
+                    data.message + ' | Rol: ' + data.rol + ' | Token: ' + (data.token ? data.token.substring(0, 20) + '...' : 'N/A'));
+            } else {
+                showResult('login-result', false, data.message);
+            }
+        } catch (err) {
+            showResult('login-result', false, 'No se pudo conectar al servidor. ¿Está corriendo la app?');
+        }
+    }
+
+    async function doRegister(e) {
+        e.preventDefault();
+        const body = {
+            nombre: document.getElementById('reg-nombre').value,
+            apellido: document.getElementById('reg-apellido').value,
+            username: document.getElementById('reg-user').value,
+            email: document.getElementById('reg-email').value,
+            password: document.getElementById('reg-pass').value
+        };
+        try {
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const data = await res.json();
+            if (data.success) {
+                showResult('register-result', true,
+                    data.message + ' | Ahora puedes iniciar sesión con: ' + data.username);
+                document.getElementById('reg-nombre').value = '';
+                document.getElementById('reg-apellido').value = '';
+                document.getElementById('reg-user').value = '';
+                document.getElementById('reg-email').value = '';
+                document.getElementById('reg-pass').value = '';
+            } else {
+                showResult('register-result', false, data.message);
+            }
+        } catch (err) {
+            showResult('register-result', false, 'No se pudo conectar al servidor. ¿Está corriendo la app?');
+        }
+    }
+</script>
+</body>
+</html>

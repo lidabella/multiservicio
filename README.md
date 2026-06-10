@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Sistema Web de Gestión de Atención Multiservicio
 
 Proyecto de habilitación — Backend Spring Boot + Frontend React + MySQL.
@@ -109,3 +110,7 @@ Frontend en **http://localhost:3000**
 ## Autor
 
 Proyecto de habilitación — Gestión de Atención Multiservicio
+=======
+# multiservicio
+trabajo importante
+>>>>>>> 3abf63b39a05c1f39760984282a1dd10dd51605e
